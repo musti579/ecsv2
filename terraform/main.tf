@@ -1,9 +1,15 @@
 module "vpc" {
   source = "./modules/vpc"
 
-  vpc_cidr             = "10.0.0.0/16"
-  public_subnet_cidrs  = ["10.0.101.0/24", "10.0.102.0/24"]
-  private_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
-  azs                  = ["eu-north-1a", "eu-north-1b"] 
+  vpc_cidr             = module.vpc.vpc_cidr
+  public_subnet_cidrs  = module.vpc.public_subnet_cidrs
+  private_subnet_cidrs = module.vpc.private_subnet_cidrs
+  azs                  = module.vpc.azs 
   
+}
+
+module "rds" {
+  source   = "./modules/rds"
+  vpc_cidr = module.vpc.vpc_cidr
+
 }

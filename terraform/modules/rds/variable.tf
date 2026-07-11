@@ -27,3 +27,8 @@ variable "db_allocated_storage" {
   type        = number
   default     = 20
 }
+
+
+variable "vpc_cidr" {
+  type = string
+}

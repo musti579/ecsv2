@@ -1,15 +1,15 @@
 
-
+# using private subnets so the db is never directly reachable from the internet
 resource "aws_db_subnet_group" "rds_subnet" {
-  name       = "main"
+  name       = "rds-subnet-group"
   subnet_ids = aws_subnet.private_subnets[*].id
   tags = {
-    Name = "My DB subnet group"
+    Name = "rds-subnet-group"
   }
 }
 
-
-resource "aws_db_instance" "db" {
+# created rds database port exposed by default
+resource "aws_db_instance" "rds_postgres" {
   allocated_storage    = var.db_allocated_storage
   db_name              = var.db_name
   engine               = "postgres"
@@ -19,4 +19,28 @@ resource "aws_db_instance" "db" {
   instance_class       = var.db_instance_class
   username             = var.db_username
   skip_final_snapshot  = true
+  publicly_accessible  = false
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+
+
+}
+
+resource "aws_security_group" "rds_sg" {
+  name   = "rds_sg"
+  vpc_id = aws_vpc.vpc.id
+
+  ingress = [
+    from_port = 5432
+    to_port = 5432
+    protocol = "tcp" 
+    cidr_block = [var.vpc_cidr]
+
+  ]
+  egress  = [
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  ]
 }
