@@ -2,7 +2,7 @@
 # using private subnets so the db is never directly reachable from the internet
 resource "aws_db_subnet_group" "rds_subnet" {
   name       = "rds-subnet-group"
-  subnet_ids = aws_subnet.private_subnets[*].id
+  subnet_ids = var.private_subnet_ids
   tags = {
     Name = "rds-subnet-group"
   }
@@ -27,20 +27,20 @@ resource "aws_db_instance" "rds_postgres" {
 
 resource "aws_security_group" "rds_sg" {
   name   = "rds_sg"
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = var.vpc_id
 
-  ingress = [
+  ingress {
     from_port = 5432
     to_port = 5432
     protocol = "tcp" 
-    cidr_block = [var.vpc_cidr]
+    cidr_blocks = [var.vpc_cidr]
 
-  ]
-  egress  = [
+  }
+  egress {
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
 
-  ]
+  }
 }
