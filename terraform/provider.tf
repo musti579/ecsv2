@@ -10,7 +10,13 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "eu-north-1"
-}
+
+  default_tags {
+    tags = {
+      Project = "ecs2"
+    }
+ }
+} 
 
 terraform {
   backend "s3" {
