@@ -5,6 +5,7 @@ module "vpc" {
   public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
   azs                  = var.azs
+  private_rt = var.private_rt
 }
 
 module "rds" {
@@ -29,5 +30,7 @@ module "endpoint" {
   source = "./modules/endpoint"
 
   vpc_id = module.vpc.vpc_id
+  private_rt = module.vpc.private_rt
+  
   
 }
