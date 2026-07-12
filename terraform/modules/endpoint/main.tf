@@ -4,11 +4,6 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   vpc_endpoint_type = "Gateway"
   route_table_ids = [var.private_rt]
 
-
- security_group_ids = [
-    aws_security_group.endpoint_sg.id,
-  ]
-
   tags = {
     Name = "s3_endpoint"
   }

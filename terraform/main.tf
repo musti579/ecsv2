@@ -37,3 +37,7 @@ module "endpoint" {
   private_rt    = module.vpc.private_rt  
   vpc_cidr      = module.vpc.vpc_cidr
 }
+
+module "ecr" {
+  source = "./modules/ecr"
+}

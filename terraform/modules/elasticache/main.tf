@@ -1,5 +1,5 @@
 resource "aws_elasticache_subnet_group" "bridge" {
-  name       = "elasticache_redis"
+  name       = "elasticache-redis"
   subnet_ids = var.private_subnet_ids
 }
 
