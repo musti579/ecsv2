@@ -10,7 +10,7 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   ]
 
   tags = {
-    name = "s3 endpoint"
+    Name = "s3_endpoint"
   }
 }
 
@@ -85,7 +85,7 @@ resource "aws_security_group" "endpoint_sg" {
   ingress {
     from_port = 443
     to_port = 443
-    protocol = "https" 
+    protocol = "tcp" 
     cidr_blocks = [var.vpc_cidr]
 
   }

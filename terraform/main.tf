@@ -26,6 +26,10 @@ vpc_cidr           = module.vpc.vpc_cidr
 
 }
 
+module "sqs" {
+  source = "./modules/sqs"
+}
+
 module "endpoint" {
   source = "./modules/endpoint"
 
