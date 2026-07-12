@@ -9,3 +9,7 @@ output "vpc_id" {
 output "vpc_cidr" {
   value = aws_vpc.vpc.cidr_block
 }
+
+output "private_rt" {
+  value = aws_route_table.private_rt.id
+}
