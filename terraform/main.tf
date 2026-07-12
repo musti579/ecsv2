@@ -29,6 +29,7 @@ vpc_cidr           = module.vpc.vpc_cidr
 module "endpoint" {
   source = "./modules/endpoint"
 
-  vpc_id = module.vpc.vpc_id
-  private_rt = module.vpc.private_rt  
+  vpc_id        = module.vpc.vpc_id
+  private_rt    = module.vpc.private_rt  
+  vpc_cidr      = module.vpc.vpc_cidr
 }

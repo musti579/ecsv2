@@ -5,3 +5,6 @@ variable "vpc_id" {
 variable "private_rt" {
   type = string
 }
+variable "vpc_cidr" {
+  type = string
+}

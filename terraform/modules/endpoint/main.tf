@@ -6,7 +6,7 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
 
 
  security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
   tags = {
@@ -22,7 +22,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   
 
   security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
  
@@ -35,7 +35,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
 }
@@ -47,7 +47,7 @@ resource "aws_vpc_endpoint" "sqs_endpoint" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
   
@@ -60,7 +60,7 @@ resource "aws_vpc_endpoint" "cloudwatch_endpoint" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
   
@@ -73,8 +73,27 @@ resource "aws_vpc_endpoint" "secret_manager_endpoint" {
   private_dns_enabled = true
 
   security_group_ids = [
-    aws_security_group.sg1.id,
+    aws_security_group.endpoint_sg.id,
   ]
 
 }
 
+resource "aws_security_group" "endpoint_sg" {
+  name   = "endpoint_sg"
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port = 443
+    to_port = 443
+    protocol = "https" 
+    cidr_blocks = [var.vpc_cidr]
+
+  }
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+
+  }
+}
