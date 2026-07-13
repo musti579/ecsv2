@@ -41,3 +41,8 @@ module "endpoint" {
 module "ecr" {
   source = "./modules/ecr"
 }
+
+module "ecs" {
+  source        = "./modules/ecs"
+  db_secret_arn = module.rds.db_secret_arn
+}
