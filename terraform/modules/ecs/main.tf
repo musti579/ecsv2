@@ -55,3 +55,9 @@ resource "aws_iam_role" "execution" {
     Name = "ecs2-task-execution-role"
   }
 }
+
+
+resource "aws_iam_role_policy_attachment" "execution_managed" {
+  role       = aws_iam_role.execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
