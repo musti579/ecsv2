@@ -111,6 +111,26 @@ resource "aws_iam_role_policy" "api_sqs" {
   })
 }
 
+
+resource "aws_iam_role" "worker_task" {
+  name = "ecs2-worker-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+
+  tags = {
+    Name = "ecs2-worker-task-role"
+  }
+}
+
 resource "aws_iam_role_policy" "worker_sqs" {
   name = "ecs2-worker-sqs"
   role = aws_iam_role.worker_sqs.id
