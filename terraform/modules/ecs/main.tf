@@ -76,3 +76,34 @@ resource "aws_iam_role_policy_attachment" "execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role_policy" "api_sqs" {
+  name = "ecs2-api-sqs"
+  role = aws_iam_role.api_task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "sqs:SendMessage"
+      Resource = var.sqs_queue_arn
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "worker_sqs" {
+  name = "ecs2-worker-sqs"
+  role = aws_iam_role_policy.worker_sqs.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action = [
+    "sqs:ReceiveMessage",           
+    "sqs:DeleteMessage",
+    "sqs:GetQueueAttributes"
+    ]
+      Resource = var.sqs_queue_arn
+    }]
+  })
+}
