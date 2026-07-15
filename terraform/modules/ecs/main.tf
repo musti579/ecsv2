@@ -76,6 +76,27 @@ resource "aws_iam_role_policy_attachment" "execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+
+resource "aws_iam_role" "api_task" {
+  name = "ecs2-api-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+    }]
+  })
+
+  tags = {
+    Name = "ecs2-api-task-role"
+  }
+}
+
+
 resource "aws_iam_role_policy" "api_sqs" {
   name = "ecs2-api-sqs"
   role = aws_iam_role.api_task.id
@@ -92,7 +113,7 @@ resource "aws_iam_role_policy" "api_sqs" {
 
 resource "aws_iam_role_policy" "worker_sqs" {
   name = "ecs2-worker-sqs"
-  role = aws_iam_role_policy.worker_sqs.id
+  role = aws_iam_role.worker_sqs.id
 
   policy = jsonencode({
     Version = "2012-10-17"
