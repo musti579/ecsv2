@@ -133,7 +133,7 @@ resource "aws_iam_role" "worker_task" {
 
 resource "aws_iam_role_policy" "worker_sqs" {
   name = "ecs2-worker-sqs"
-  role = aws_iam_role.worker_sqs.id
+  role = aws_iam_role.worker_task.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -147,4 +147,47 @@ resource "aws_iam_role_policy" "worker_sqs" {
       Resource = var.sqs_queue_arn
     }]
   })
+}
+
+
+resource "aws_ecs_task_definition" "api" {
+  family                   = "ecs2-api"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.api_task.arn
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = "api"
+      image     = "${var.api_image_url}:v1"
+      essential = true
+      portMappings = [
+        { containerPort = 8080, protocol = "tcp" }
+      ]
+      environment = [
+        { name = "REDIS_URL",     value = var.redis_url },
+        { name = "SQS_QUEUE_URL", value = var.sqs_queue_url },
+        { name = "PORT",          value = "8080" }
+      ]
+      secrets = [
+        { name = "DB_PASSWORD", valueFrom = var.db_secret_arn }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/ecs2-api"
+          "awslogs-region"        = "eu-north-1"
+          "awslogs-stream-prefix" = "api"
+        }
+      }
+    }
+  ])
 }
