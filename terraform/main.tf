@@ -47,6 +47,6 @@ module "ecs" {
   db_secret_arn = module.rds.db_secret_arn
   sqs_queue_arn = module.sqs.queue_arn
   api_image_url = module.ecr.api_repository_url
-  redis_url = module.elasticache.redis_endpoint
-  SQS_QUEUE_URL = module.sqs.queue_url
+  redis_url     = module.elasticache.redis_endpoint
+  sqs_queue_url = module.sqs.queue_url
 }

@@ -14,6 +14,6 @@ variable "redis_url" {
   type = string
 }
 
-variable "SQS_QUEUE_URL" {
+variable "sqs_queue_url" {
   type = string
 }
