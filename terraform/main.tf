@@ -45,4 +45,5 @@ module "ecr" {
 module "ecs" {
   source        = "./modules/ecs"
   db_secret_arn = module.rds.db_secret_arn
+  sqs_queue_arn = module.sqs.queue_arn
 }
