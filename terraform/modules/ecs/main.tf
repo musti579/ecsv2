@@ -177,9 +177,9 @@ resource "aws_ecs_task_definition" "api" {
         { name = "SQS_QUEUE_URL", value = var.sqs_queue_url },
         { name = "PORT",          value = "8080" }
       ]
-      secrets = [
-        { name = "DB_PASSWORD", valueFrom = var.db_secret_arn }
-      ]
+            secrets = [
+    { name = "DATABASE_URL", valueFrom = var.db_secret_arn }    
+        ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

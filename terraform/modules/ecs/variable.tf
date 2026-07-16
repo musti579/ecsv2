@@ -17,3 +17,7 @@ variable "redis_url" {
 variable "sqs_queue_url" {
   type = string
 }
+
+variable "worker_image_url" {
+  type = string
+}

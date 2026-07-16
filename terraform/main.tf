@@ -49,4 +49,5 @@ module "ecs" {
   api_image_url = module.ecr.api_repository_url
   redis_url     = module.elasticache.redis_endpoint
   sqs_queue_url = module.sqs.queue_url
+  worker_image_url = module.ecr.worker_repository_url
 }
