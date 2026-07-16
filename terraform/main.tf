@@ -52,3 +52,9 @@ module "ecs" {
   worker_image_url = module.ecr.worker_repository_url
   dashboard_image_url = module.ecr.dashboard_repository_url
 }
+
+module "alb" {
+  source = "./modules/alb"
+
+  public_subnet_ids = module.vpc.private_subnet_ids
+}
