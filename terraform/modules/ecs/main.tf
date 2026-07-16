@@ -191,3 +191,81 @@ resource "aws_ecs_task_definition" "api" {
     }
   ])
 }
+
+resource "aws_ecs_task_definition" "worker" {
+  family                   = "ecs2-worker"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.worker_task.arn
+
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+ container_definitions = jsonencode([
+    {
+      name      = "worker"
+      image     = "${var.worker_image_url}:v1"
+      essential = true
+    
+      environment = [
+        { name = "SQS_QUEUE_URL", value = var.sqs_queue_url },
+      ]
+            secrets = [
+    { name = "DATABASE_URL", valueFrom = var.db_secret_arn }    
+        ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/ecs2-worker"
+          "awslogs-region"        = "eu-north-1"
+          "awslogs-stream-prefix" = "worker"
+        }
+      }
+    }
+  ])
+
+}
+
+
+resource "aws_ecs_task_definition" "dashboard" {
+  family                   = "ecs2-dashboard"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+ container_definitions = jsonencode([
+    {
+      name      = "dashboard"
+      image     = "${var.dashboard_image_url}:v1"
+      essential = true
+      portMappings = [
+        { containerPort = 8081, protocol = "tcp" }
+      ]
+       environment = [
+        { name = "PORT",          value = "8081" }
+      ]
+            secrets = [
+    { name = "DATABASE_URL", valueFrom = var.db_secret_arn }    
+        ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-group"         = "/ecs/ecs2-dashboard"
+          "awslogs-region"        = "eu-north-1"
+          "awslogs-stream-prefix" = "dashboard"
+        }
+      }
+    }
+  ])
+}

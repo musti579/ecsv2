@@ -21,3 +21,7 @@ variable "sqs_queue_url" {
 variable "worker_image_url" {
   type = string
 }
+
+variable "dashboard_image_url" {
+  type = string
+}
