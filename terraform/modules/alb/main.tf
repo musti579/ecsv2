@@ -1,6 +1,6 @@
 resource "aws_security_group" "alb-sg" {
   name        = "alb-sg"
-  description = "Terraform load balancer security group"
+  description = "Application load balancer security group"
   vpc_id      = var.vpc_id
 
  # Allow all inbound traffic.
@@ -31,7 +31,7 @@ resource "aws_security_group" "alb-sg" {
 
 
 resource "aws_lb" "alb" {
-  name               = "ecsv2-alb"
+  name               = "ecs2-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb-sg.id]
@@ -41,6 +41,37 @@ resource "aws_lb" "alb" {
 
   tags = {
     Name = "ecs2-alb"
+  }
+}
+
+
+resource "aws_security_group" "ecs2-sg" {
+  name        = "ecs2-sg"
+  description = "Application load balancer security group for ecs task"
+  vpc_id      = var.vpc_id
+
+ # Allow all inbound traffic.
+  ingress {
+    description     = "api from ALB"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    cidr_blocks     = var.alb_sg.id
+  }
+
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = var.alb_sg.id
+  }
+
+  # Allow all outbound traffic.
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
