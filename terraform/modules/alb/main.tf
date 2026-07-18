@@ -76,7 +76,7 @@ resource "aws_security_group" "ecs2-sg" {
 }
 
 
-  # Target Group forwading traffic to Api blue & Green.
+  # Target Group forwarding traffic to Api blue & Green with health checks.
 resource "aws_lb_target_group" "api_blue" {
   name        = "ecs2-api-blue"
   target_type = "ip"
@@ -113,6 +113,8 @@ resource "aws_lb_target_group" "api_green" {
   }
 }
 
+
+  # Target Group forwarding traffic to Dashboard blue & Green with health checks.
 resource "aws_lb_target_group" "dashboard_blue" {
   name        = "ecs2-dashboard-blue"
   target_type = "ip"
@@ -147,4 +149,35 @@ resource "aws_lb_target_group" "dashboard_green" {
     healthy_threshold   = 2
     unhealthy_threshold = 3
   }
+}
+
+  # api listener listens for http request and then forwards it to api blue
+resource "aws_lb_listener" "api_listener" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api_blue.arn
+  }
+} 
+
+
+# listener rule given listens to any of the condition if meet then traffic is sent to dashboard blue
+resource "aws_lb_listener_rule" "dashboard_listener" {
+  listener_arn = aws_lb_listener.api_listener.arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.dashboard_blue.arn
+  }
+
+   condition {
+    path_pattern {
+      values = ["/summary", "/url/*", "/recent", "/top"]
+    }
+  }
+
 }
