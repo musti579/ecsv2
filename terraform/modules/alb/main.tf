@@ -76,3 +76,39 @@ resource "aws_security_group" "ecs2-sg" {
 }
 
 
+  # Target Group forwading traffic to Api blue & Green.
+resource "aws_lb_target_group" "api_blue" {
+  name        = "ecs2-api-blue"
+  target_type = "ip"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/healthz"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group" "api_green" {
+  name        = "ecs2-api-green"
+  target_type = "ip"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/healthz"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+}
