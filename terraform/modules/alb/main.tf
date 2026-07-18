@@ -112,3 +112,39 @@ resource "aws_lb_target_group" "api_green" {
     unhealthy_threshold = 3
   }
 }
+
+resource "aws_lb_target_group" "dashboard_blue" {
+  name        = "ecs2-dashboard-blue"
+  target_type = "ip"
+  port        = 8081
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/healthz"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+}
+
+resource "aws_lb_target_group" "dashboard_green" {
+  name        = "ecs2-dashboard-green"
+  target_type = "ip"
+  port        = 8081
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path                = "/healthz"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+}
