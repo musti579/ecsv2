@@ -5,7 +5,3 @@ variable "public_subnet_ids" {
 variable "vpc_id" {
   type = string
 }
-
-variable "alb_sg" {
-  type = string
-}

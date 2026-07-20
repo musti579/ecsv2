@@ -45,33 +45,39 @@ resource "aws_lb" "alb" {
 }
 
 
-resource "aws_security_group" "ecs2-sg" {
+resource "aws_security_group" "ecs2_sg" {
   name        = "ecs2-sg"
-  description = "Application load balancer security group for ecs task"
+  description = "ECS task security group - only allows traffic from the ALB"
   vpc_id      = var.vpc_id
 
- # Allow all inbound traffic.
   ingress {
     description     = "api from ALB"
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
-    cidr_blocks     = var.alb_sg.id
+    security_groups = [aws_security_group.alb-sg.id]
+  
   }
 
   ingress {
-    from_port   = 8081
-    to_port     = 8081
-    protocol    = "tcp"
-    cidr_blocks = var.alb_sg.id
+    description     = "dashboard from ALB"
+    from_port       = 8081
+    to_port         = 8081
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb-sg.id]
+  
   }
 
-  # Allow all outbound traffic.
   egress {
+    description = "allow tasks to reach RDS, Redis and VPC endpoints"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ecs2-sg"
   }
 }
 
@@ -179,5 +185,50 @@ resource "aws_lb_listener_rule" "dashboard_listener" {
       values = ["/summary", "/url/*", "/recent", "/top"]
     }
   }
+}
 
+resource "aws_wafv2_web_acl" "alb" {
+  name  = "ecs2-waf"
+  scope = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "common-rules"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "common-rules"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "ecs2-waf"
+    sampled_requests_enabled   = true
+  }
+
+  tags = {
+    Name = "ecs2-waf"
+  }
+}
+
+resource "aws_wafv2_web_acl_association" "alb" {
+  resource_arn = aws_lb.alb.arn
+  web_acl_arn  = aws_wafv2_web_acl.alb.arn
 }
