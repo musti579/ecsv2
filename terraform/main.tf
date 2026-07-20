@@ -60,3 +60,10 @@ module "alb" {
   vpc_id = module.vpc.vpc_id
 
 }
+
+module "codedeploy" {
+  source = "./modules/codedeploy"
+
+  api_blue_tg_name  = module.alb.api_blue_tg_name
+  api_green_tg_name = module.alb.api_green_tg_name
+}
