@@ -66,4 +66,6 @@ module "codedeploy" {
 
   api_blue_tg_name  = module.alb.api_blue_tg_name
   api_green_tg_name = module.alb.api_green_tg_name
+  ecs2_cluster = module.ecs.cluster_name
+  listener_arn = module.alb.listener_arn
 }

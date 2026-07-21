@@ -62,14 +62,14 @@ resource "aws_codedeploy_deployment_group" "api" {
   }
 
   ecs_service {
-    cluster_name = aws_ecs_cluster.ecs2_cluster.name
+    cluster_name = var.ecs2_cluster.name
     service_name = aws_ecs_service.api.name
   }
 
   load_balancer_info {
     target_group_pair_info {
       prod_traffic_route {
-        listener_arns = [aws_lb_listener.api_listener.arn]
+        listener_arns = [var.listener_arn]
       }
 
       target_group {
