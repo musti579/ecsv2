@@ -25,3 +25,15 @@ variable "worker_image_url" {
 variable "dashboard_image_url" {
   type = string
 }
+
+variable "private_subnet_ids" {
+  type = list(string)
+}
+
+variable "api_blue_tg_arn" {
+  type = string
+}
+
+variable "ecs_sg_id" {
+  type = string
+}
