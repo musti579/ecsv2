@@ -269,3 +269,59 @@ resource "aws_ecs_task_definition" "dashboard" {
     }
   ])
 }
+
+resource "aws_ecs_service" "api" {
+  name            = "ecs2-api"
+  cluster         = aws_ecs_cluster.ecs2_cluster.id
+  task_definition = aws_ecs_task_definition.api.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = var.private_subnet_ids
+    security_groups  = [var.ecs_sg_id]
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = var.api_blue_tg_arn
+    container_name   = "api"
+    container_port   = 8080
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
+  lifecycle {
+    ignore_changes = [task_definition, load_balancer]
+  }
+}
+
+resource "aws_ecs_service" "dashboard" {
+  name            = "ecs2-dashboard"
+  cluster         = aws_ecs_cluster.ecs2_cluster.id
+  task_definition = aws_ecs_task_definition.dashboard.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = var.private_subnet_ids
+    security_groups  = [var.ecs_sg_id]
+    assign_public_ip = false
+  }
+
+  load_balancer {
+    target_group_arn = var.api_blue_tg_arn
+    container_name   = "dashboard"
+    container_port   = 8081
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
+  lifecycle {
+    ignore_changes = [task_definition, load_balancer]
+  }
+}

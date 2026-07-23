@@ -54,7 +54,6 @@ module "ecs" {
   api_blue_tg_arn = module.alb.api_blue_tg_arn 
   ecs_sg_id = module.alb.ecs_sg_id
   private_subnet_ids = module.vpc.private_subnet_ids
-
 }
 
 module "alb" {
