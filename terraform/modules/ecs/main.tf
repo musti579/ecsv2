@@ -312,7 +312,7 @@ resource "aws_ecs_service" "dashboard" {
   }
 
   load_balancer {
-    target_group_arn = var.api_blue_tg_arn
+    target_group_arn = var.dashboard_blue_tg_arn
     container_name   = "dashboard"
     container_port   = 8081
   }
@@ -323,5 +323,23 @@ resource "aws_ecs_service" "dashboard" {
 
   lifecycle {
     ignore_changes = [task_definition, load_balancer]
+  }
+}
+
+resource "aws_ecs_service" "worker" {
+  name            = "ecs2-worker"
+  cluster         = aws_ecs_cluster.ecs2_cluster.id
+  task_definition = aws_ecs_task_definition.worker.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = var.private_subnet_ids
+    security_groups  = [var.ecs_sg_id]
+    assign_public_ip = false
+  }
+
+  deployment_controller {
+    type = "ECS"
   }
 }

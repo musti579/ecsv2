@@ -34,6 +34,10 @@ variable "api_blue_tg_arn" {
   type = string
 }
 
+variable "dashboard_blue_tg_arn" {
+  type = string
+}
+
 variable "ecs_sg_id" {
   type = string
 }
