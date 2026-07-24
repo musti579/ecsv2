@@ -13,3 +13,19 @@ variable "ecs2_cluster" {
 variable "listener_arn" {
   type = string
 }
+
+variable "api_service_name" {
+  type = string
+}
+
+variable "dashboard_service_name" {
+  type = string
+}
+
+variable "dashboard_blue_tg_name" {
+  type = string
+}
+
+variable "dashboard_green_tg_name" {
+  type = string
+}

@@ -62,8 +62,8 @@ resource "aws_codedeploy_deployment_group" "api" {
   }
 
   ecs_service {
-    cluster_name = var.ecs2_cluster.name
-    service_name = aws_ecs_service.api.name
+    cluster_name = var.ecs2_cluster
+    service_name = var.api_service_name
   }
 
   load_balancer_info {
